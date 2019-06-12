@@ -16,5 +16,7 @@
         [Display(Name = "Last Sale")] public DateTime? LastSale { get; set; }
         [Display(Name = "IsAvalable")] public bool IsAvalaible { get; set; }
         [Display(Name = "Stock")] [DisplayFormat(DataFormatString = "{0:N2}", ApplyFormatInEditMode = false)] public double Stock { get; set; }
+
+        public User User { get; set; }
     }
 }
