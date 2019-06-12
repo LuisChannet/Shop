@@ -3,7 +3,7 @@ namespace Shop.Web.Data
 {
     using Shop.Web.Data.Entities;
 
-    internal interface IProductRepository : IGenericRepository<Product>
+    public  interface IProductRepository : IGenericRepository<Product>
     {
     }
 }
