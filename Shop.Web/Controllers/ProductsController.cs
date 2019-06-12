@@ -68,14 +68,14 @@ namespace Shop.Web.Controllers
         }
 
         // GET: Products/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public IActionResult Edit(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var product = await _context.Products.FindAsync(id);
+            var product = this.repository.GetProduct(id.Value);// await _context.Products.FindAsync(id);
             if (product == null)
             {
                 return NotFound();
@@ -84,9 +84,7 @@ namespace Shop.Web.Controllers
         }
 
         // POST: Products/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Price,ImageUrl,LastPurchase,LastSale,IsAvalaible,Stock")] Product product)
         {
@@ -99,12 +97,12 @@ namespace Shop.Web.Controllers
             {
                 try
                 {
-                    _context.Update(product);
-                    await _context.SaveChangesAsync();
+                    //_context.Update(product);
+                    await this.repository.SaveAllAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ProductExists(product.Id))
+                    if (!this.ProductExists(product.Id))
                     {
                         return NotFound();
                     }
@@ -119,15 +117,15 @@ namespace Shop.Web.Controllers
         }
 
         // GET: Products/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public IActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var product = await _context.Products
-                .FirstOrDefaultAsync(m => m.Id == id);
+            // await this.repository.RemoveProduct(id.Value);
+            var product = this.repository.GetProduct(id.Value);
             if (product == null)
             {
                 return NotFound();
@@ -136,20 +134,20 @@ namespace Shop.Web.Controllers
             return View(product);
         }
 
-        // POST: Products/Delete/5
+        //POST: Products/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var product = await _context.Products.FindAsync(id);
-            _context.Products.Remove(product);
-            await _context.SaveChangesAsync();
+            var product = this.repository.GetProduct(id);
+            this.repository.RemoveProduct(product);
+            await this.repository.SaveAllAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool ProductExists(int id)
         {
-            return _context.Products.Any(e => e.Id == id);
+            return this.repository.ProductExists(id);//_context.Products.Any(e => e.Id == id);
         }
     }
 }
