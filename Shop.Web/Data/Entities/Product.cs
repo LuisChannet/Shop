@@ -6,7 +6,7 @@
     using System.Linq;
     using System.Threading.Tasks;
 
-    public class Product
+    public class Product:IEntity
     {
         public int Id { get; set; }
         [MaxLength(50,ErrorMessage ="El campo {0} requiere ser máximo {1} de largo")] [Required] public string Name { get; set; }

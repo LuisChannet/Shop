@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Shop.Web.Data.Entities;
-
+﻿
 namespace Shop.Web.Data
 {
-    public interface IRepository
+ using System.Collections.Generic;
+using System.Threading.Tasks;
+using Shop.Web.Data.Entities;
+   public interface IRepository
     {
         void AddProduct(Product product);
         Product GetProduct(int id);

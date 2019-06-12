@@ -7,19 +7,22 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Shop.Web.Data;
 using Shop.Web.Data.Entities;
+using Shop.Web.Helpers;
 
 namespace Shop.Web.Controllers
 {
     public class ProductsController : Controller
     {
         private readonly IRepository repository;
-
+        private readonly IUserHelper userHelper;
+ 
         //private readonly DataContext _context;
 
-        public ProductsController(IRepository repository)
+        public ProductsController(IRepository repository, IUserHelper userHelper)
         {
             this.repository = repository;
-            //_context = context;
+            this.userHelper = userHelper;
+             //_context = context;
         }
 
         // GET: Products
@@ -60,6 +63,8 @@ namespace Shop.Web.Controllers
         {
             if (ModelState.IsValid)
             {
+                //TODO: cambiar el usuario por el logueado
+                product.User = await this.userHelper.GetUserByEmailAsync("channet@ityh.com");
                 this.repository.AddProduct(product);
                 await this.repository.SaveAllAsync();
                 return RedirectToAction(nameof(Index));
@@ -97,6 +102,8 @@ namespace Shop.Web.Controllers
             {
                 try
                 {
+                    //TODO: cambiar el usuario por el logueado
+                    product.User = await this.userHelper.GetUserByEmailAsync("channet@ityh.com");
                     //_context.Update(product);
                     await this.repository.SaveAllAsync();
                 }
