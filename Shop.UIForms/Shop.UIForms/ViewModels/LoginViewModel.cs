@@ -1,35 +1,40 @@
-﻿using System.Windows.Input;
-//using GalaSoft.MvvmLight.Command;
-using Xamarin.Forms;
-
-public class LoginViewModel
+﻿namespace Shop.UIForms.ViewModels
 {
-    public string Email { get; set; }
 
-    public string Password { get; set; }
+    using GalaSoft.MvvmLight.Command;
+    using System.Windows.Input;
+    //using GalaSoft.MvvmLight.Command;
+    using Xamarin.Forms;
 
-    public ICommand LoginCommand => new RelayCommand(this.Login);
-
-    private async void Login()
+    public class LoginViewModel
     {
-        if (string.IsNullOrEmpty(this.Email))
-        {
-            await Application.Current.MainPage.DisplayAlert("Error", "You must enter an email", "Accept");
-            return;
-        }
+        public string Email { get; set; }
 
-        if (string.IsNullOrEmpty(this.Password))
-        {
-            await Application.Current.MainPage.DisplayAlert("Error", "You must enter a password", "Accept");
-            return;
-        }
+        public string Password { get; set; }
 
-        if (!this.Email.Equals("jzuluaga55@gmail.com") || !this.Password.Equals("123456"))
-        {
-            await Application.Current.MainPage.DisplayAlert("Error", "Incorrect user or password", "Accept");
-            return;
-        }
+        public ICommand LoginCommand => new RelayCommand(Login);
 
-        await Application.Current.MainPage.DisplayAlert("Ok", "Fuck yeah!!!", "Accept");
+        private async void Login()
+        {
+            if (string.IsNullOrEmpty(Email))
+            {
+                await Application.Current.MainPage.DisplayAlert("Error", "You must enter an email", "Accept");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(Password))
+            {
+                await Application.Current.MainPage.DisplayAlert("Error", "You must enter a password", "Accept");
+                return;
+            }
+
+            if (!Email.Equals("jzuluaga55@gmail.com") || !Password.Equals("123456"))
+            {
+                await Application.Current.MainPage.DisplayAlert("Error", "Incorrect user or password", "Accept");
+                return;
+            }
+
+            await Application.Current.MainPage.DisplayAlert("Ok", "Fuck yeah!!!", "Accept");
+        }
     }
 }
