@@ -28,7 +28,7 @@
                                 @Html.DisplayNameFor(model => model.LastSale)
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model.IsAvalaible)
+                                @Html.DisplayNameFor(model => model.IsAvailabe)
                             </th>
                             <th>
                                 @Html.DisplayNameFor(model => model.Stock)
@@ -46,7 +46,11 @@
                                 @Html.DisplayFor(modelItem => item.Price)
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.ImageUrl)
+                                @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                {
+                                    <img src="@Url.Content(item.ImageUrl)" alt="Image" style="width:100px;height:150px;max-width: 100%; height: auto;" />
+                                }
+
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.LastPurchase)
@@ -55,7 +59,7 @@
                                 @Html.DisplayFor(modelItem => item.LastSale)
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.IsAvalaible)
+                                @Html.DisplayFor(modelItem => item.IsAvailabe)
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.Stock)

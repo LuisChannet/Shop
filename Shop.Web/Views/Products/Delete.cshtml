@@ -27,7 +27,10 @@
             @Html.DisplayNameFor(model => model.ImageUrl)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.ImageUrl)
+            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+            {
+                <img src="@Url.Content(Model.ImageUrl)" alt="Image" style="width:200px;height:300px;max-width: 100%; height: auto;" />
+            }
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.LastPurchase)
@@ -42,10 +45,10 @@
             @Html.DisplayFor(model => model.LastSale)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.IsAvalaible)
+            @Html.DisplayNameFor(model => model.IsAvailabe)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.IsAvalaible)
+            @Html.DisplayFor(model => model.IsAvailabe)
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.Stock)
