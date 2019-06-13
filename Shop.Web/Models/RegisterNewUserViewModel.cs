@@ -1,11 +1,11 @@
 ﻿
 namespace Shop.Web.Models
 {
-using System;
-using System.Collections.Generic;
+    using System;
+    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.Linq;
-using System.Threading.Tasks;
+    using System.Threading.Tasks;
     public class RegisterNewUserViewModel
     {
         [Required]
@@ -20,7 +20,8 @@ using System.Threading.Tasks;
         [DataType(DataType.EmailAddress)]
         public string Username { get; set; }
 
-        [Required][MinLength(6)]
+        [Required]
+        [MinLength(6)]
         public string Password { get; set; }
 
         [Required]
