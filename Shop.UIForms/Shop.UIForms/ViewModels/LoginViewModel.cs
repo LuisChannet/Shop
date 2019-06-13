@@ -28,7 +28,7 @@
                 return;
             }
 
-            if (!Email.Equals("jzuluaga55@gmail.com") || !Password.Equals("123456"))
+            if (!Email.Equals("channet@ityh.com") || !Password.Equals("123456"))
             {
                 await Application.Current.MainPage.DisplayAlert("Error", "Incorrect user or password", "Accept");
                 return;
