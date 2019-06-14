@@ -3,19 +3,27 @@ namespace Shop.Web.Controllers
 {
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.IdentityModel.Tokens;
     using Shop.Web.Data.Entities;
     using Shop.Web.Helpers;
     using Shop.Web.Models;
+    using System;
+    using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
+    using System.Security.Claims;
+    using System.Text;
     using System.Threading.Tasks;
 
-    public class AccountController : Controller
+   public class AccountController : Controller
     {
         private readonly IUserHelper userHelper;
+        private readonly IConfiguration configuration;
 
-        public AccountController(IUserHelper userHelper)
+        public AccountController(IUserHelper userHelper, IConfiguration configuration)
         {
             this.userHelper = userHelper;
+            this.configuration = configuration;
         }
 
         public IActionResult Login()
@@ -31,22 +39,22 @@ namespace Shop.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
-            if (this.ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                var result = await this.userHelper.LoginAsync(model);
+                var result = await userHelper.LoginAsync(model);
                 if (result.Succeeded)
                 {
-                    if (this.Request.Query.Keys.Contains("ReturnUrl"))
+                    if (Request.Query.Keys.Contains("ReturnUrl"))
                     {
-                        return this.Redirect(this.Request.Query["ReturnUrl"].First());
+                        return Redirect(Request.Query["ReturnUrl"].First());
                     }
 
-                    return this.RedirectToAction("Index", "Home");
+                    return RedirectToAction("Index", "Home");
                 }
             }
 
-            this.ModelState.AddModelError(string.Empty, "Failed to login.");
-            return this.View(model);
+            ModelState.AddModelError(string.Empty, "Failed to login.");
+            return View(model);
         }
         public async Task<IActionResult> Logout()
         {
@@ -61,9 +69,9 @@ namespace Shop.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(RegisterNewUserViewModel model)
         {
-            if (this.ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                var user = await this.userHelper.GetUserByEmailAsync(model.Username);
+                var user = await userHelper.GetUserByEmailAsync(model.Username);
                 if (user == null)
                 {
                     user = new User
@@ -74,11 +82,11 @@ namespace Shop.Web.Controllers
                         UserName = model.Username
                     };
 
-                    var result = await this.userHelper.AddUserAsync(user, model.Password);
+                    var result = await userHelper.AddUserAsync(user, model.Password);
                     if (result != IdentityResult.Success)
                     {
-                        this.ModelState.AddModelError(string.Empty, "The user couldn't be created.");
-                        return this.View(model);
+                        ModelState.AddModelError(string.Empty, "The user couldn't be created.");
+                        return View(model);
                     }
 
 
@@ -89,25 +97,25 @@ namespace Shop.Web.Controllers
                         Username = model.Username
                     };
 
-                    var result2 = await this.userHelper.LoginAsync(loginViewModel);
+                    var result2 = await userHelper.LoginAsync(loginViewModel);
 
                     if (result2.Succeeded)
                     {
-                        return this.RedirectToAction("Index", "Home");
+                        return RedirectToAction("Index", "Home");
                     }
 
-                    this.ModelState.AddModelError(string.Empty, "The user couldn't be login.");
-                    return this.View(model);
+                    ModelState.AddModelError(string.Empty, "The user couldn't be login.");
+                    return View(model);
                 }
 
-                this.ModelState.AddModelError(string.Empty, "The username is already registered.");
+                ModelState.AddModelError(string.Empty, "The username is already registered.");
             }
 
-            return this.View(model);
+            return View(model);
         }
         public async Task<IActionResult> ChangeUser()
         {
-            var user = await this.userHelper.GetUserByEmailAsync(this.User.Identity.Name);
+            var user = await userHelper.GetUserByEmailAsync(User.Identity.Name);
             var model = new ChangeUserViewModel();
             if (user != null)
             {
@@ -115,69 +123,112 @@ namespace Shop.Web.Controllers
                 model.LastName = user.LastName;
             }
 
-            return this.View(model);
+            return View(model);
         }
 
         [HttpPost]
         public async Task<IActionResult> ChangeUser(ChangeUserViewModel model)
         {
-            if (this.ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                var user = await this.userHelper.GetUserByEmailAsync(this.User.Identity.Name);
+                var user = await userHelper.GetUserByEmailAsync(User.Identity.Name);
                 if (user != null)
                 {
                     user.FirstName = model.FirstName;
                     user.LastName = model.LastName;
-                    var respose = await this.userHelper.UpdateUserAsync(user);
+                    var respose = await userHelper.UpdateUserAsync(user);
                     if (respose.Succeeded)
                     {
-                        this.ViewBag.UserMessage = "User updated!";
+                        ViewBag.UserMessage = "User updated!";
                     }
                     else
                     {
-                        this.ModelState.AddModelError(string.Empty, respose.Errors.FirstOrDefault().Description);
+                        ModelState.AddModelError(string.Empty, respose.Errors.FirstOrDefault().Description);
                     }
                 }
                 else
                 {
-                    this.ModelState.AddModelError(string.Empty, "User no found.");
+                    ModelState.AddModelError(string.Empty, "User no found.");
                 }
             }
 
-            return this.View(model);
+            return View(model);
         }
 
         public IActionResult ChangePassword()
         {
-            return this.View();
+            return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
         {
-            if (this.ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                var user = await this.userHelper.GetUserByEmailAsync(this.User.Identity.Name);
+                var user = await userHelper.GetUserByEmailAsync(User.Identity.Name);
                 if (user != null)
                 {
-                    var result = await this.userHelper.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+                    var result = await userHelper.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
                     if (result.Succeeded)
                     {
-                        return this.RedirectToAction("ChangeUser");
+                        return RedirectToAction("ChangeUser");
                     }
                     else
                     {
-                        this.ModelState.AddModelError(string.Empty, result.Errors.FirstOrDefault().Description);
+                        ModelState.AddModelError(string.Empty, result.Errors.FirstOrDefault().Description);
                     }
                 }
                 else
                 {
-                    this.ModelState.AddModelError(string.Empty, "User no found.");
+                    ModelState.AddModelError(string.Empty, "User no found.");
                 }
             }
 
-            return this.View(model);
+            return View(model);
         }
+        [HttpPost]
+        public async Task<IActionResult> CreateToken([FromBody] LoginViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await userHelper.GetUserByEmailAsync(model.Username);
+                if (user != null)
+                {
+                    var result = await userHelper.ValidatePasswordAsync(
+                        user,
+                        model.Password);
+
+                    if (result.Succeeded)
+                    {
+                        var claims = new[]
+                        {
+                    new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                };
+
+                        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Tokens:Key"]));
+                        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+                        var token = new JwtSecurityToken(
+                            configuration["Tokens:Issuer"],
+                            configuration["Tokens:Audience"],
+                            claims,
+                            expires: DateTime.UtcNow.AddDays(15),
+                            signingCredentials: credentials);
+                        var results = new
+                        {
+                            token = new JwtSecurityTokenHandler().WriteToken(token),
+                            expiration = token.ValidTo
+                        };
+
+                        return Created(string.Empty, results);
+                    }
+                }
+            }
+
+            return BadRequest();
+        }
+
+
 
 
     }
