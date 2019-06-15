@@ -1,6 +1,9 @@
 ﻿@inherits Microsoft.VisualStudio.Web.CodeGeneration.Templating.RazorTemplateBase
 @using System.Collections.Generic;
 @using System.Linq;
+
+namespace @Model.ControllerNamespace
+{
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,9 +17,6 @@ using Microsoft.EntityFrameworkCore;
         @:using @namespaceName;
     }
 }
-
-namespace @Model.ControllerNamespace
-{
 @{
     string routePrefix;
     if (String.IsNullOrEmpty(Model.AreaName))
@@ -65,7 +65,7 @@ namespace @Model.ControllerNamespace
         @:@string.Format("[Area(\"{0}\")]", Model.AreaName)
     }
 }
-    public class @Model.ControllerName : Controller//MvcControllerWithContext
+    public class @Model.ControllerName : Controller//Channet ITH
     {
     private readonly @Model.ContextTypeName _context;
 
@@ -76,23 +76,23 @@ namespace @Model.ControllerNamespace
 
     // GET: @routePrefix
     @{
-        @:public async Task<IActionResult>
-            @:Index();
+        @:public async Task<IActionResult>Index()
             @:{
-            var includeExpressions = "";
-            includeExpressions = String.Join("", relatedProperties
-                .Values
-                .Select(property => String.Format(".Include({0} => {0}.{1})", lambdaVar, property.AssociationPropertyName)));
-            if (!String.IsNullOrEmpty(includeExpressions))
-            {
-                @:var @entitySetVar = _context.@entitySetName@includeExpressions;
-                @:return View(await @(entitySetVar).ToListAsync());
-            }
-            else
-            {
-                @:return View(await _context.@(entitySetName).ToListAsync());
-            }
-    }        }
+                var includeExpressions = "";
+                includeExpressions = String.Join("", relatedProperties
+                    .Values
+                    .Select(property => String.Format(".Include({0} => {0}.{1})", lambdaVar, property.AssociationPropertyName)));
+                if (!String.IsNullOrEmpty(includeExpressions))
+                {
+                    @:var @entitySetVar = _context.@entitySetName@includeExpressions;
+                    @:return View(await @(entitySetVar).ToListAsync());
+                            /**/
+                            }
+                                else
+                                {
+                                    @:return View(await _context.@(entitySetName).ToListAsync());
+                                                    /**/
+                                            } }}
 
     // GET: @routePrefix/Details/5
     public async Task<IActionResult>
